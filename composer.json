@@ -1,0 +1,21 @@
+{
+	"name" : "foxsiscom/basebundle",
+	"license" : "proprietary",
+	"type" : "library",
+	"description" : "Configuração inicial do projeto",
+	"autoload" : {
+		"psr-0" : {
+			"Foxsiscom\\BaseBundle\\"
+		}
+	},
+	"require" : {
+		"php" : ">=5.4.0",
+		"ext-pdo" : "*"
+	},
+	"homepage" : "https://github.com/foxsiscom/basebundle",
+	"minimum-stability" : "stable",
+	"support" : {
+		"email" : "contato@foxsis.com",
+		"issues" : "https://github.com/foxsiscom/basebundle/issues"
+	}
+}
