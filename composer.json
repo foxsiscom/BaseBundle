@@ -5,7 +5,7 @@
 	"description" : "Configuração inicial do projeto",
 	"autoload" : {
 		"psr-0" : {
-			"Foxsiscom\\BaseBundle\\"
+			"Foxsiscom\\BaseBundle\\" : ""
 		}
 	},
 	"require" : {
