@@ -26,12 +26,4 @@ abstract class ControllerAbstract extends Controller
             ->getFlashBag()
             ->add($type, $message);
     }
-
-    public function create($entity = null)
-    {
-        $entity = $entity != null ? $entity : $this->getService()->getNewEntity();
-        $this->view->assign('formData', $this->getService()
-            ->getFormData());
-        $this->view->assign('entity', $entity);
-    }
 }
