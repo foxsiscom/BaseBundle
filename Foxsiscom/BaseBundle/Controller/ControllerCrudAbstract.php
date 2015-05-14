@@ -1,5 +1,4 @@
 <?php
-
 namespace Foxsiscom\BaseBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -9,6 +8,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 abstract class ControllerCrudAbstract extends ControllerAbstract
 {
+
+    public $routeIndexName;
 
     /**
      * Lists all entities.
@@ -25,12 +26,10 @@ abstract class ControllerCrudAbstract extends ControllerAbstract
         }
         $criteria = $request->query->get($form->getName(), array());
         $service = $this->get('cnccncbundle.comunidade_service');
-        $sd = ServiceData::build(
-            array(
-                'criteria' => $criteria,
-                'page' => $request->get('page', 1)
-            )
-        );
+        $sd = ServiceData::build(array(
+            'criteria' => $criteria,
+            'page' => $request->get('page', 1)
+        ));
         $query = $service->findByCriteria($sd);
 
         return array(

@@ -16,6 +16,8 @@ abstract class ServiceAbstract
 
     protected $securityContext;
 
+    public $rootEntity;
+
     /**
      * @return \Doctrine\ORM\EntityManager
      */
@@ -131,7 +133,7 @@ abstract class ServiceAbstract
      * @param ServiceData $sd
      * @return \Fox\CmsBundle\Service\StaticPageService
      */
-    public function add(ServiceData $sd)
+    public function add($params)
     {
         $object = $sd->get('object');
         $this->validate($object, array(
@@ -175,5 +177,22 @@ abstract class ServiceAbstract
         $manager->flush();
 
         return $this;
+    }
+
+    /**
+     *
+     * @param array $criteria
+     * @return QueryBuilder
+     */
+    public function findByCriteria($criteria = array())
+    {
+        $criteria = $this->filterEmpty($criteria);
+        $repository = $this->getEntityManager()->getRepository($this->rootEntity);
+        return $repository->findByCriteria($criteria);
+    }
+
+    public function getFormData()
+    {
+        return array();
     }
 }
