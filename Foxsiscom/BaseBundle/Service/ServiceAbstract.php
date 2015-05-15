@@ -201,6 +201,7 @@ abstract class ServiceAbstract
 
     public function loadFromArray($entity, $array)
     {
+    	$array = $this->filterEmpty($array);
         $cmf = $this->getEntityManager()->getMetadataFactory();
         $entityName = get_class($entity);
         $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
