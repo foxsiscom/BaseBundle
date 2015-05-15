@@ -199,11 +199,29 @@ abstract class ServiceAbstract
         return array();
     }
 
-    public function loadFromArray($entity, $values)
+    public function loadFromArray($entity, $array)
     {
-        foreach ($values as $key => $value) {
-        $method = "set".ucfirst($key);
-            $entity->$method($value);
+        $cmf = $this->em->getMetadataFactory();
+        $entityName = get_class($entity);
+        $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
+        $associationNames = $cmf->getMetadataFor($entityName)->getAssociationNames();
+
+        foreach ($array as $key => $value) {
+            $set = 'set'.ucfirst($key);
+
+            if (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
+                $value = \DateTime::createFromFormat('d/m/Y', $value);
+                $entity->$set($value);
+            } elseif (in_array($key, $fieldNames)) {
+                $entity->$set($value);
+            } elseif (in_array($key, $associationNames)) {
+                $class = $cmf->getMetadataFor($entityName)->getAssociationTargetClass($key);
+                $value = $this->em->getRepository($class)->find($value);
+                $entity->$set($value);
+            } else {
+                continue;
+//                 throw new \Exception("attr {$key} desconhecido");
+            }
         }
         return $entity;
     }
