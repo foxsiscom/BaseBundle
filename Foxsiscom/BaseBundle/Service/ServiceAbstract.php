@@ -120,6 +120,9 @@ abstract class ServiceAbstract
      * @return array
      */
     protected function filterEmpty($arrayData) {
+        if (!count($arrayData)) {
+            return array();
+        }
         return array_filter(
             $arrayData,
             function ($var) {
@@ -135,15 +138,15 @@ abstract class ServiceAbstract
      */
     public function add($params)
     {
-        $object = $sd->get('object');
-        $this->validate($object, array(
+        $entity = new $this->rootEntity();
+        $entity = $this->loadFromArray($entity, $params);
+        $this->validate($entity, array(
             'registration'
         ));
-        $manager = $this->getManager();
-        $manager->persist($object);
-        $manager->flush();
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
 
-        return $this;
+        return $entity;
     }
 
     /**
@@ -194,5 +197,14 @@ abstract class ServiceAbstract
     public function getFormData()
     {
         return array();
+    }
+
+    public function loadFromArray($entity, $values)
+    {
+        foreach ($values as $key => $value) {
+        $method = "set".ucfirst($key);
+            $entity->$method($value);
+        }
+        return $entity;
     }
 }

@@ -11,7 +11,7 @@ abstract class EntityRepositoryAbstract extends EntityRepository
      * @param array $criteria
      * @return QueryBuilder
      */
-    public function findByCriteria(array $criteria = array())
+    public function findByCriteria($criteria = array())
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('e');
