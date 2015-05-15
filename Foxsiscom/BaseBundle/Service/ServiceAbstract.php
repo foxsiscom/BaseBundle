@@ -201,7 +201,7 @@ abstract class ServiceAbstract
 
     public function loadFromArray($entity, $array)
     {
-        $cmf = $this->em->getMetadataFactory();
+        $cmf = $this->getEntityManager()->getMetadataFactory();
         $entityName = get_class($entity);
         $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
         $associationNames = $cmf->getMetadataFor($entityName)->getAssociationNames();
@@ -216,7 +216,7 @@ abstract class ServiceAbstract
                 $entity->$set($value);
             } elseif (in_array($key, $associationNames)) {
                 $class = $cmf->getMetadataFor($entityName)->getAssociationTargetClass($key);
-                $value = $this->em->getRepository($class)->find($value);
+                $value = $this->getEntityManager()->getRepository($class)->find($value);
                 $entity->$set($value);
             } else {
                 continue;
