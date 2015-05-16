@@ -194,7 +194,7 @@ abstract class ServiceAbstract
         return $repository->findByCriteria($criteria);
     }
 
-    public function getFormData()
+    public function getFormData($entity = null)
     {
         return array();
     }
