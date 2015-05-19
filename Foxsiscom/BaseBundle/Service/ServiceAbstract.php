@@ -133,10 +133,10 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param ServiceData $sd
+     * @param array
      * @return \Fox\CmsBundle\Service\StaticPageService
      */
-    public function add($params)
+    public function add($params = array())
     {
         $entity = new $this->rootEntity();
         $entity = $this->loadFromArray($entity, $params);
@@ -151,35 +151,32 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param ServiceData $sd
+     * @param array
      * @return \Fox\CmsBundle\Service\StaticPageService
      */
-    public function modify(ServiceData $sd)
+    public function modify($entity, $params = array())
     {
-        $object = $sd->get('object');
-        $this->validate($object, array(
+        $entity = $this->loadFromArray($entity, $params);
+        $this->validate($entity, array(
             'edition'
         ));
-        $manager = $this->getManager();
-        $manager->persist($object);
-        $manager->flush();
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
 
-        return $this;
+        return $entity;
     }
 
     /**
      *
-     * @param ServiceData $sd
-     * @return \Fox\CmsBundle\Service\StaticPageService
+     * @param Entity $entity
+     * @return Entity
      */
-    public function remove(ServiceData $sd)
+    public function remove($entity)
     {
-        $document = $sd->get('object');
-        $manager = $this->getManager();
-        $manager->remove($document);
-        $manager->flush();
+        $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->flush();
 
-        return $this;
+        return true;
     }
 
     /**
