@@ -2,6 +2,7 @@
 
 namespace Foxsiscom\BaseBundle\Service;
 
+use Irtun\CoreBundle\ServiceLayer\ServiceValidationException;
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Component\Security\Core\SecurityContext;
 
@@ -16,7 +17,7 @@ abstract class ServiceAbstract
 
     protected $securityContext;
 
-    public $rootEntity;
+    public $entity;
 
     /**
      * @return \Doctrine\ORM\EntityManager
@@ -68,6 +69,49 @@ abstract class ServiceAbstract
         return $this->validator;
     }
 
+    public function find($id)
+    {
+        return $this->getEntityManager()->getRepository($this->entity)->find($id);
+    }
+
+    public function findByCriteria(ServiceData $sd)
+    {
+        return $this->getEntityManager()->getRepository($this->entity)->findByCriteria($sd);
+    }
+
+    public function getNewEntity()
+    {
+        return new $this->entity();
+    }
+
+    public function loadFromArray($entity, $array)
+    {
+		$array = $this->filterEmpty($array);
+        $cmf = $this->getEntityManager()->getMetadataFactory();
+        $entityName = get_class($entity);
+        $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
+        $associationNames = $cmf->getMetadataFor($entityName)->getAssociationNames();
+
+        foreach ($array as $key => $value) {
+            $set = 'set'.ucfirst($key);
+
+            if (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
+                $value = \DateTime::createFromFormat('d/m/Y', $value);
+                $entity->$set($value);
+            } elseif (in_array($key, $fieldNames)) {
+                $entity->$set($value);
+            } elseif (in_array($key, $associationNames)) {
+                $class = $cmf->getMetadataFor($entityName)->getAssociationTargetClass($key);
+                $value = $this->getEntityManager()->getRepository($class)->find($value);
+                $entity->$set($value);
+            } else {
+                continue;
+                //                 throw new \Exception("attr {$key} desconhecido");
+            }
+        }
+        return $entity;
+    }
+
     /**
      * @DI\InjectParams({
      *     "securityContext" = @DI\Inject("security.context")
@@ -77,15 +121,6 @@ abstract class ServiceAbstract
     {
         $this->securityContext = $securityContext;
         return $this;
-    }
-
-    public function getManager()
-    {
-        $manager = $this->getDocumentManager();
-        if (empty($manager)) {
-            $manager = $this->getEntityManager();
-        }
-        return $manager;
     }
 
     /**
@@ -120,9 +155,6 @@ abstract class ServiceAbstract
      * @return array
      */
     protected function filterEmpty($arrayData) {
-        if (!count($arrayData)) {
-            return array();
-        }
         return array_filter(
             $arrayData,
             function ($var) {
@@ -133,13 +165,12 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param array
-     * @return \Fox\CmsBundle\Service\StaticPageService
+     * @param Entity $entity
+     * @return Entity $entity
      */
-    public function add($params = array())
+    public function add(ServiceData $sd)
     {
-        $entity = new $this->rootEntity();
-        $entity = $this->loadFromArray($entity, $params);
+        $entity = $sd->get('object');
         $this->validate($entity, array(
             'registration'
         ));
@@ -151,12 +182,12 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param array
-     * @return \Fox\CmsBundle\Service\StaticPageService
+     * @param Entity $entity
+     * @return Entity $entity
      */
-    public function modify($entity, $params = array())
+    public function modify(ServiceData $sd)
     {
-        $entity = $this->loadFromArray($entity, $params);
+        $entity = $sd->get('object');
         $this->validate($entity, array(
             'edition'
         ));
@@ -169,58 +200,14 @@ abstract class ServiceAbstract
     /**
      *
      * @param Entity $entity
-     * @return Entity
+     * @return Entity $entity
      */
-    public function remove($entity)
+    public function remove(ServiceData $sd)
     {
+        $entity = $sd->get('object');
         $this->getEntityManager()->remove($entity);
         $this->getEntityManager()->flush();
 
-        return true;
-    }
-
-    /**
-     *
-     * @param array $criteria
-     * @return QueryBuilder
-     */
-    public function findByCriteria($criteria = array())
-    {
-        $criteria = $this->filterEmpty($criteria);
-        $repository = $this->getEntityManager()->getRepository($this->rootEntity);
-        return $repository->findByCriteria($criteria);
-    }
-
-    public function getFormData($entity = null)
-    {
-        return array();
-    }
-
-    public function loadFromArray($entity, $array)
-    {
-    	$array = $this->filterEmpty($array);
-        $cmf = $this->getEntityManager()->getMetadataFactory();
-        $entityName = get_class($entity);
-        $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
-        $associationNames = $cmf->getMetadataFor($entityName)->getAssociationNames();
-
-        foreach ($array as $key => $value) {
-            $set = 'set'.ucfirst($key);
-
-            if (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
-                $value = \DateTime::createFromFormat('d/m/Y', $value);
-                $entity->$set($value);
-            } elseif (in_array($key, $fieldNames)) {
-                $entity->$set($value);
-            } elseif (in_array($key, $associationNames)) {
-                $class = $cmf->getMetadataFor($entityName)->getAssociationTargetClass($key);
-                $value = $this->getEntityManager()->getRepository($class)->find($value);
-                $entity->$set($value);
-            } else {
-                continue;
-//                 throw new \Exception("attr {$key} desconhecido");
-            }
-        }
         return $entity;
     }
 }
