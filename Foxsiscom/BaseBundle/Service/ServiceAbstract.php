@@ -1,14 +1,15 @@
 <?php
-
 namespace Foxsiscom\BaseBundle\Service;
 
-use Irtun\CoreBundle\ServiceLayer\ServiceValidationException;
+use Foxsiscom\BaseBundle\Service\Exception\ServiceValidationException;
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Component\Security\Core\SecurityContext;
 
 abstract class ServiceAbstract
 {
+
     /**
+     *
      * @var \Doctrine\ORM\EntityManager
      */
     protected $entityManager;
@@ -17,9 +18,8 @@ abstract class ServiceAbstract
 
     protected $securityContext;
 
-    public $entity;
-
     /**
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
@@ -28,9 +28,7 @@ abstract class ServiceAbstract
     }
 
     /**
-     * @DI\InjectParams({
-     *     "entityManager" = @DI\Inject("doctrine.orm.entity_manager")
-     * })
+     * @DI\InjectParams({"entityManager" = @DI\Inject("doctrine.orm.entity_manager")})
      */
     public function setEntityManager($entityManager)
     {
@@ -46,22 +44,22 @@ abstract class ServiceAbstract
 
     public function getUser()
     {
-        return $this->getSecurityContext()->getToken()->getUser();
+        return $this->getSecurityContext()
+            ->getToken()
+            ->getUser();
     }
 
     /**
-     * @DI\InjectParams({
-     *     "validator" = @DI\Inject("validator")
-     * })
+     * @DI\InjectParams({"validator" = @DI\Inject("respect.validator")})
      */
     public function setValidator($validator)
     {
         $this->validator = $validator;
-
         return $this;
     }
 
     /**
+     *
      * @return \Symfony\Component\Validator\Validator
      */
     public function getValidator()
@@ -69,53 +67,18 @@ abstract class ServiceAbstract
         return $this->validator;
     }
 
-    public function find($id)
+    /**
+     *
+     * @param string $entityName
+     * @return Doctrine\ORM\EntityRepository
+     */
+    public function getRepository($entityName)
     {
-        return $this->getEntityManager()->getRepository($this->entity)->find($id);
-    }
-
-    public function findByCriteria(ServiceData $sd)
-    {
-        return $this->getEntityManager()->getRepository($this->entity)->findByCriteria($sd);
-    }
-
-    public function getNewEntity()
-    {
-        return new $this->entity();
-    }
-
-    public function loadFromArray($entity, $array)
-    {
-		$array = $this->filterEmpty($array);
-        $cmf = $this->getEntityManager()->getMetadataFactory();
-        $entityName = get_class($entity);
-        $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
-        $associationNames = $cmf->getMetadataFor($entityName)->getAssociationNames();
-
-        foreach ($array as $key => $value) {
-            $set = 'set'.ucfirst($key);
-
-            if (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
-                $value = \DateTime::createFromFormat('d/m/Y', $value);
-                $entity->$set($value);
-            } elseif (in_array($key, $fieldNames)) {
-                $entity->$set($value);
-            } elseif (in_array($key, $associationNames)) {
-                $class = $cmf->getMetadataFor($entityName)->getAssociationTargetClass($key);
-                $value = $this->getEntityManager()->getRepository($class)->find($value);
-                $entity->$set($value);
-            } else {
-                continue;
-                //                 throw new \Exception("attr {$key} desconhecido");
-            }
-        }
-        return $entity;
+        return $this->getEntityManager()->getRepository($entityName);
     }
 
     /**
-     * @DI\InjectParams({
-     *     "securityContext" = @DI\Inject("security.context")
-     * })
+     * @DI\InjectParams({"securityContext" = @DI\Inject("security.context")})
      */
     public function setSecurityContext(SecurityContext $securityContext)
     {
@@ -124,13 +87,13 @@ abstract class ServiceAbstract
     }
 
     /**
+     *
      * @param mixed $object
      * @param string[] $groups
      * @throws ServiceValidationException
      */
     protected function validate($object, $groups = array())
     {
-
         $validations = $this->getValidator()->validate($object, $groups);
 
         if (count($validations)) {
@@ -151,26 +114,12 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param array $arrayData
-     * @return array
-     */
-    protected function filterEmpty($arrayData) {
-        return array_filter(
-            $arrayData,
-            function ($var) {
-                return !($var === '');
-            }
-        );
-    }
-
-    /**
-     *
-     * @param Entity $entity
+     * @param ServiceData $sd
      * @return Entity $entity
      */
     public function add(ServiceData $sd)
     {
-        $entity = $sd->get('object');
+        $entity = $sd->get('entity');
         $this->validate($entity, array(
             'registration'
         ));
@@ -182,12 +131,12 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param Entity $entity
+     * @param ServiceData $sd
      * @return Entity $entity
      */
     public function modify(ServiceData $sd)
     {
-        $entity = $sd->get('object');
+        $entity = $sd->get('entity');
         $this->validate($entity, array(
             'edition'
         ));
@@ -199,12 +148,12 @@ abstract class ServiceAbstract
 
     /**
      *
-     * @param Entity $entity
+     * @param ServiceData $sd
      * @return Entity $entity
      */
     public function remove(ServiceData $sd)
     {
-        $entity = $sd->get('object');
+        $entity = $sd->get('entity');
         $this->getEntityManager()->remove($entity);
         $this->getEntityManager()->flush();
 
