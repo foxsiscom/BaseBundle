@@ -80,4 +80,9 @@ abstract class ControllerAbstract extends Controller
         }
         return $entity;
     }
+
+    public function getRepository($entityName)
+    {
+        return $this->getDoctrine()->getManager()->getRepository($entityName);
+    }
 }

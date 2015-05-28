@@ -94,6 +94,7 @@ abstract class ServiceAbstract
      */
     protected function validate($object, $groups = array())
     {
+        return true;
         $validations = $this->getValidator()->validate($object, $groups);
 
         if (count($validations)) {
@@ -158,5 +159,10 @@ abstract class ServiceAbstract
         $this->getEntityManager()->flush();
 
         return $entity;
+    }
+
+    public function getFormData($entity = null)
+    {
+        return array();
     }
 }
