@@ -50,7 +50,7 @@ abstract class ServiceAbstract
     }
 
     /**
-     * @DI\InjectParams({"validator" = @DI\Inject("respect.validator")})
+     * @DI\InjectParams({"validator" = @DI\Inject("validator")})
      */
     public function setValidator($validator)
     {
