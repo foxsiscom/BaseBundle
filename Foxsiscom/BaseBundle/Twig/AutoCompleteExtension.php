@@ -10,7 +10,7 @@ class AutoCompleteExtension extends \Twig_Extension
 
     const SCRIPT = '<script type="text/javascript">
         $(function(){
-            autoComplete("#%s","%s");
+            autoComplete("#%s","%s", %s);
         });
         </script>';
 
@@ -34,15 +34,18 @@ class AutoCompleteExtension extends \Twig_Extension
 
     /**
      * @param string $name
-     * @param string $routeName
      * @param string $id
+     * @param string $routeName
+     * @param string[] $params
      * @param string $class
      * @param string[] $attrs
      * @return string
      */
-    public function createInput($name, $routeName, $id, $class = "form-control", $attrs = array())
+    public function createInput($name, $id, $routeName, $routeParams = null, $class = "form-control", $attrs = array())
     {
         $strAttrs = null;
+        // echo '<pre>';print_r($routeParams);die;
+        $routeParams = json_encode($routeParams);
 
         foreach ($attrs as $key => $value) {
             $strAttrs .= "{$key}=\"{$value}\" ";
@@ -60,7 +63,8 @@ class AutoCompleteExtension extends \Twig_Extension
         $output .= sprintf(
             self::SCRIPT,
             $id,
-            $routeName
+            $routeName,
+            $routeParams
         );
 
         return $output;
