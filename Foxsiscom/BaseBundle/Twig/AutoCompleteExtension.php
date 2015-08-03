@@ -6,11 +6,11 @@ class AutoCompleteExtension extends \Twig_Extension
     /**
      * @var string
      */
-    const SKELETON = '<input type="text" name="%s" id="%s" class="%s" %s >';
+    const SKELETON = '<input type="text" name="%s" id="%s" value="%s" %s >';
 
     const SCRIPT = '<script type="text/javascript">
         $(function(){
-            autoComplete("#%s","%s", %s);
+            autoComplete("#%s","%s", %s, %s);
         });
         </script>';
 
@@ -41,22 +41,28 @@ class AutoCompleteExtension extends \Twig_Extension
      * @param string[] $attrs
      * @return string
      */
-    public function createInput($name, $id, $routeName, $routeParams = null, $class = "form-control", $attrs = array())
+    public function createInput($name, $id, $value = null, $routeName, $routeParams = null, $attrs = array(), $otherParams = null)
     {
         $strAttrs = null;
-        // echo '<pre>';print_r($routeParams);die;
         $routeParams = json_encode($routeParams);
-
-        foreach ($attrs as $key => $value) {
-            $strAttrs .= "{$key}=\"{$value}\" ";
+        if (!isset($otherParams['allowClear'])) {
+            $otherParams['allowClear'] = false;
         }
-
+        $otherParams = json_encode($otherParams);
+        
+        if (!isset($attrs['placeholder'])) {
+            $attrs['placeholder'] = "digite para pesquisar";
+        }
+        foreach ($attrs as $key => $val) {
+            $strAttrs .= "{$key}=\"{$val}\" ";
+        }
+        
         $output = null;
         $output .= sprintf(
             self::SKELETON,
             $name,
             $id,
-            $class,
+            $value,
             $strAttrs
         );
 
@@ -64,7 +70,8 @@ class AutoCompleteExtension extends \Twig_Extension
             self::SCRIPT,
             $id,
             $routeName,
-            $routeParams
+            $routeParams,
+            $otherParams
         );
 
         return $output;
