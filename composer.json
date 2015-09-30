@@ -17,6 +17,5 @@
 	"support" : {
 		"email" : "contato@foxsis.com",
 		"issues" : "https://github.com/foxsiscom/basebundle/issues"
-	},
-	"target-dir" : "Foxsiscom/BaseBundle"
+	}
 }
