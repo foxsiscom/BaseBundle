@@ -1,9 +1,8 @@
 <?php
 
 /**
- * This file is part of BraincraftedBootstrapBundle.
+ * This file is part of FoxsiscomBaseBundle.
  *
- * (c) 2012-2013 by Florian Eckerstorfer
  */
 
 namespace Foxsiscom\BaseBundle;
@@ -13,12 +12,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * BraincraftedBootstrapBundle
  *
- * @package   BraincraftedBootstrapBundle
- * @author    Florian Eckerstorfer <florian@eckerstorfer.co>
- * @copyright 2012-2013 Florian Eckerstorfer
- * @license   http://opensource.org/licenses/MIT The MIT License
- * @link      http://bootstrap.braincrafted.com Bootstrap for Symfony2
+ * @package   Foxsiscom\BaseBundle\FoxsiscomBaseBundle
+ * @author    Rodrigo Régis Palmeira <regis@foxsis.com>
  */
-class FoxsisBaseBundle extends Bundle
+class FoxsiscomBaseBundle extends Bundle
 {
 }
