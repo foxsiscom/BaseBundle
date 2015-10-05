@@ -4,6 +4,7 @@ namespace Foxsiscom\BaseBundle\Service;
 
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Component\Security\Core\SecurityContext;
+use Fox\CoreBundle\ServiceLayer\ServiceValidationException;
 
 abstract class ServiceAbstract
 {
@@ -198,7 +199,7 @@ abstract class ServiceAbstract
 
     public function loadFromArray($entity, $array)
     {
-    	$array = $this->filterEmpty($array);
+//     	$array = $this->filterEmpty($array);
         $cmf = $this->getEntityManager()->getMetadataFactory();
         $entityName = get_class($entity);
         $fieldNames = $cmf->getMetadataFor($entityName)->getFieldNames();
@@ -207,7 +208,9 @@ abstract class ServiceAbstract
         foreach ($array as $key => $value) {
             $set = 'set'.ucfirst($key);
 
-            if (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
+            if ($value == "") {
+                $entity->$set(null);
+            } elseif (in_array($key, $fieldNames) && in_array($cmf->getMetadataFor($entityName)->getTypeOfField($key), array('date', 'datetime'))) {
                 $value = \DateTime::createFromFormat('d/m/Y', $value);
                 $entity->$set($value);
             } elseif (in_array($key, $fieldNames)) {
