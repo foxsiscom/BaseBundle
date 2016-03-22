@@ -5,6 +5,7 @@ namespace Foxsiscom\BaseBundle\Service;
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Component\Security\Core\SecurityContext;
 use Fox\CoreBundle\ServiceLayer\ServiceValidationException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 abstract class ServiceAbstract
 {
@@ -144,6 +145,11 @@ abstract class ServiceAbstract
         $this->validate($entity, array(
             'registration'
         ));
+        $accessor = PropertyAccess::createPropertyAccessor();
+        if ($accessor->isWritable($entity, 'idPesUpd')) {
+            $entity->setIdPesUpd($this->getUser()->getId());
+            $entity->setDtUpd(new \DateTime());
+        }
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
 
@@ -161,6 +167,11 @@ abstract class ServiceAbstract
         $this->validate($entity, array(
             'edition'
         ));
+        $accessor = PropertyAccess::createPropertyAccessor();
+        if ($accessor->isWritable($entity, 'idPesUpd')) {
+            $entity->setIdPesUpd($this->getUser()->getId());
+            $entity->setDtUpd(new \DateTime());
+        }
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
 
