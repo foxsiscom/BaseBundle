@@ -1,21 +1,21 @@
 {
-	"name" : "foxsiscom/basebundle",
-	"license" : "proprietary",
-	"type" : "symfony-bundle",
-	"description" : "Configuração inicial do projeto",
-	"autoload" : {
-		"psr-0" : {
-			"Foxsiscom\\BaseBundle" : ""
-		}
-	},
-	"require" : {
-		"php" : ">=5.4.0",
-		"ext-pdo" : "*",
-		"jms/di-extra-bundle" : "1.5.*"
-	},
-	"homepage" : "https://github.com/foxsiscom/basebundle",
-	"support" : {
-		"email" : "contato@foxsis.com",
-		"issues" : "https://github.com/foxsiscom/basebundle/issues"
-	}
+  "name": "foxsiscom/basebundle",
+  "license": "proprietary",
+  "type": "symfony-bundle",
+  "description": "Configuração inicial do projeto",
+  "autoload": {
+    "psr-0": {
+      "Foxsiscom\\BaseBundle": ""
+    }
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "ext-pdo": "*",
+    "jms/di-extra-bundle": "1.*"
+  },
+  "homepage": "https://github.com/foxsiscom/basebundle",
+  "support": {
+    "email": "contato@foxsis.com",
+    "issues": "https://github.com/foxsiscom/basebundle/issues"
+  }
 }
