@@ -4,6 +4,7 @@ namespace Foxsiscom\BaseBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract class ControllerAbstract extends Controller
 {
@@ -25,5 +26,17 @@ abstract class ControllerAbstract extends Controller
         $this->get('session')
             ->getFlashBag()
             ->add($type, $message);
+    }
+
+    public function callbackMessageJSON($title, $message, $type = 'success')
+    {
+        $translator = $this->get("translator");
+        return new JsonResponse(
+            array(
+                "title" => $translator->trans($title),
+                "content" => $translator->trans($message),
+                "typeMessage" => $type
+            )
+        );
     }
 }
