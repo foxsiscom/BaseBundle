@@ -18,6 +18,8 @@ abstract class ServiceAbstract
 
     protected $securityContext;
 
+    protected $filterService;
+
     public $rootEntity;
 
     /**
@@ -38,6 +40,23 @@ abstract class ServiceAbstract
         $this->entityManager = $entityManager;
 
         return $this;
+    }
+
+    /**
+     * @DI\InjectParams({
+     *     "filterService" = @DI\Inject("cncsegbundle.filter_service")
+     * })
+     */
+    public function setFilterService($filterService)
+    {
+        $this->filterService = $filterService;
+
+        return $this;
+    }
+
+    public function getFilterService()
+    {
+        return $this->filterService;
     }
 
     public function getSecurityContext()
