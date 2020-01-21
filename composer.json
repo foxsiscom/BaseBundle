@@ -11,7 +11,7 @@
 	"require" : {
 		"php" : ">=5.4.0",
 		"ext-pdo" : "*",
-		"jms/di-extra-bundle" : "1.5.*"
+		"jms/di-extra-bundle" : "1.9.*"
 	},
 	"homepage" : "https://github.com/foxsiscom/basebundle",
 	"support" : {
